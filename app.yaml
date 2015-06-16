@@ -1,0 +1,16 @@
+application: iousdblue
+version: 0-0-1
+api_version: 1
+runtime: python27
+threadsafe: false
+
+
+handlers:
+- url: /.*
+  script: app.py
+  secure: always
+
+#libraries:
+#- name: requests
+#  version: "2.0.0"
+# also oathlib, requests_oauthlib

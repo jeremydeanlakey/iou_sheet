@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+<title>IOU Reset password / new user</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+<div class="container">
+
+
+{% if message %}
+<div class="container">
+<p class="text-primary">{{message}}</p>
+</div>
+{% endif %}
+
+
+<div class="well well-sm">
+New user / reset password
+</div>
+
+
+<div class="container">
+<form role="form" class="form-horizontal" action="/reset" method="post">
+  <div class="form-group">
+    <label class="control-label col-sm-2" for="email">Email:</label>
+    <div class="col-sm-10">
+      <input type="email" class="form-control" id="email" name="email" placeholder="Enter email">
+    </div>
+  </div>
+<button type="submit" class="btn btn-primary">Submit</button>
+</form>
+</div>
+
+
+
+</div>
+</body>
+</html>

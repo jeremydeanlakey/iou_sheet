@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+<title>IOU Sheet</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<script>
+
+function changeAmount(difference){
+  var currentAmountString = $('#amount').val();
+  var newAmount = difference + Number(currentAmountString);
+  if (newAmount < 0) 
+    newAmount = 0;
+  var buttonText = '<span class="glyphicon glyphicon-pencil"></span> Make New IOU for $';
+  var newAmountString = newAmount.toFixed(2);
+  $('#newIou').html(buttonText + newAmountString);
+  $('#amount').val(newAmountString);
+  if (newAmount < 0.01)
+    $('#newIou').addClass('disabled');
+  else
+    $('#newIou').removeClass('disabled');
+}
+
+
+
+function calculatePayment(){
+  var amountToPay = 0;
+  $('.iouCheckbox').each(function(){ 
+    if (this.checked)
+      amountToPay += parseFloat($(this).attr('iouAmount')); 
+  });
+  amountToPayString = amountToPay.toFixed(2);
+  var buttonText = '<span class="glyphicon glyphicon-usd"></span> Pay (to the jar) $';
+  $('#submitPayment').html(buttonText + amountToPayString);
+  if (amountToPay < 0.01)
+    $('#submitPayment').addClass('disabled');
+  else
+    $('#submitPayment').removeClass('disabled');
+}
+
+$(document).ready(function() {
+  $('.iouCheckbox').click(calculatePayment);
+  $('#add25').click( function(){changeAmount(0.25);} );
+  $('#minus25').click( function(){changeAmount(-0.25);} );
+  $('#add100').click( function(){changeAmount(1.00);} );
+  $('#minus100').click( function(){changeAmount(-1.00);} );
+  calculatePayment();
+});
+/*
+*/
+
+</script>
+
+</head>
+
+
+<body>
+<div class="container">
+
+
+<div class="well well-md">
+{{user_email}}  (<a href="/logout">logout</a>)
+</div>
+
+
+{% if message %}
+<div class="container">
+<p class="text-primary">{{message}}</p>
+</div>
+{% endif %}
+
+
+<div class="well well-sm">
+Make New IOU
+</div>
+<div class="container">
+<form role="form" action="/iou/new" method="post">
+<div class="form-group">
+<div class="btn-group-vertical">
+<button type="button" class="btn btn-default chgAmount" id="add25"><span class="glyphicon glyphicon-plus"></span> 0.25</button>
+<button type="button" class="btn btn-default chgAmount" id="minus25"><span class="glyphicon glyphicon-minus"></span> 0.25</button>
+</div>
+<div class="btn-group-vertical">
+<button type="button" class="btn btn-default chgAmount" id="add100"><span class="glyphicon glyphicon-plus"></span> 1.00</button>
+<button type="button" class="btn btn-default chgAmount" id="minus100"><span class="glyphicon glyphicon-minus"></span> 1.00</button>
+</div>
+</div>
+<div class="form-group">
+<input type="hidden" value="0.00" name="amount" id="amount" />
+<button type="submit" class="btn btn-primary disabled" id="newIou"><span class="glyphicon glyphicon-pencil"></span> Make New IOU for $0.00</button>
+</div>
+</form>
+</div>
+ 
+
+<div class="well well-sm">
+Pay/Cancel IOUs
+</div>
+<div class="container">
+<form role="form" action="/iou/pay" method="post">
+
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Pay</th>
+<th>Amount</th>
+<th>Create Date</th>
+<th>Cancel</th>
+</tr>for
+</thead>
+<tbody>
+{% for iou in ious %}
+<tr>
+<td><input type="checkbox" class="iouCheckbox" name="{{iou.key}}" iouAmount="{{iou.amount}}" value="false"> </input></td>
+<td>{{iou.amount}}</td>
+<td>{{iou.created_date}}</td>
+<td><button type="submit" class="btn btn-default" formaction="/iou/{{iou.key}}/cancel"><span class="glyphicon glyphicon-remove"></span> Cancel</button></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
+<div class="form-group">
+<button type="submit" class="btn btn-primary disabled" id="submitPayment"><span class="glyphicon glyphicon-usd"></span> Pay (to the jar) $0.00</button>
+</div>
+</form>
+</div>
+
+
+<div class="well well-sm">
+Recent Payments & Deletions
+</div>
+<div class="container">
+<table class="table table-striped">
+<thead>
+<tr>
+<th>Status</th>
+<th>Status Date</th>
+<th>Amount</th>
+<th>Create Date</th>
+</tr>
+</thead>
+<tbody>
+{% for recent in recents %}
+<tr>
+<td>{% if recent.status == 'paid' %}<span class="glyphicon glyphicon-ok">{% else %}<span class="glyphicon glyphicon-remove">{% endif %} {{recent.status}}</td>
+<td>{{recent.status_date}}</td>
+<td>{{recent.amount}}</td>
+<td>{{recent.created_date}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+
+<div class="well well-sm">
+Made by Jeremy Dean Lakey (Torchwood team) for internal use.
+</div>
+
+</div>
+</body>
+</html>

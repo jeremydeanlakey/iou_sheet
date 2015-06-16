@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+<title>IOU Admin</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+<div class="container">
+
+
+<div class="well well-md">
+{{user_email}}
+</div>
+
+
+{% if message %}
+<div class="container">
+<p class="text-primary">{{message}}</p>
+</div>
+{% endif %}
+
+
+<div class="well well-sm">
+Outstanding IOUs
+</div>
+<div class="container">
+<table class="table table-striped">
+<thead>
+<tr>
+<th>User</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody>
+{% for iou in outstanding %}
+<tr>
+<td>{{iou.user_email}}</td>
+<td>{{iou.amount}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+ 
+
+<div class="well well-sm">
+Payments
+</div>
+<div class="container">
+<table class="table table-striped">
+<thead>
+<tr>
+<th>User</th>
+<th>Amount</th>
+</tr>
+</thead>
+<tbody>
+{% for pmt in payments %}
+<tr>
+<td>{{pmt.user_email}}</td>
+<td>{{pmt.amount}}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+
+
+
+</div>
+</body>
+</html>
