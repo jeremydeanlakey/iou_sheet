@@ -53,14 +53,14 @@ class Iou(ndb.Model):
     def get_outstanding(email):
         root_key = Iou.get_root()
         qry = Iou.query(ancestor=root_key)
-        qry.filter(
+        qry = qry.filter(
             Iou.status == OUTSTANDING, 
             Iou.user_email == email
         )
         results = []
         for iou in qry.fetch():
-            if iou.status != OUTSTANDING or iou.user_email != email: # TODO why is this necessary?
-                continue
+#            if iou.status != OUTSTANDING or iou.user_email != email: # TODO why is this necessary?
+#                continue
             results.append(iou.to_json())
         return results
 
@@ -68,13 +68,13 @@ class Iou(ndb.Model):
     def get_outstanding_all():
         root_key = Iou.get_root()
         qry = Iou.query(ancestor=root_key)
-        qry.filter(
+        qry = qry.filter(
             Iou.status == OUTSTANDING
         )
         results = []
         for iou in qry.fetch():
-            if iou.status != OUTSTANDING: # TODO why is this necessary?
-                continue
+#            if iou.status != OUTSTANDING: # TODO why is this necessary?
+#                continue
             results.append(iou.to_json())
         return results
 
@@ -82,14 +82,14 @@ class Iou(ndb.Model):
     def get_recent(email):
         root_key = Iou.get_root()
         qry = Iou.query(ancestor=root_key)
-        qry.filter(
+        qry = qry.filter(
             Iou.status != OUTSTANDING, 
             Iou.user_email == email
         )
         results = []
         for iou in qry.fetch():
-            if iou.status == OUTSTANDING or iou.user_email != email: # TODO why is this necessary?
-                continue
+#            if iou.status == OUTSTANDING or iou.user_email != email: # TODO why is this necessary?
+#                continue
             results.append(iou.to_json())
         return results
 
@@ -97,13 +97,13 @@ class Iou(ndb.Model):
     def get_payments_recent():
         root_key = Iou.get_root()
         qry = Iou.query(ancestor=root_key)
-        qry.filter(
+        qry = qry.filter(
             Iou.status == PAID
         )
         results = []
         for iou in qry.fetch():
-            if iou.status != PAID: # TODO why is this necessary?
-                continue
+#            if iou.status != PAID: # TODO why is this necessary?
+#                continue
             results.append(iou.to_json())
         return results
     
