@@ -38,12 +38,17 @@ class User(ndb.Model):
     email = ndb.StringProperty(required=True)
     password = ndb.StringProperty(required=True)
     admin = ndb.BooleanProperty(default=False)
-    # TODO not implemented:
     failed_logins = ndb.IntegerProperty(default=0) 
     
     def check_pw(self, pw):
-        # TODO insecure: subject to timing attacks and brute force attacks
-        return self.password == pw
+        if self.failed_logins > 10:
+            return False
+        if self.password == pw:
+            return True
+        self.failed_logins += 1
+        self.put()
+        # TODO put some notice about disabled login
+        return false
     
     @staticmethod
     def reset(email):
@@ -60,7 +65,7 @@ class User(ndb.Model):
             )
         else:
             user.password = random_string()
-        user.put() # TODO add root for strong consistency
+        user.put()
         send_password_email(email, user.password)
         return user.password
 
