@@ -77,7 +77,7 @@ class Iou(ndb.Model):
 #                continue
             results.append(iou.to_json())
         return results
-
+    
     @staticmethod
     def get_recent(email):
         root_key = Iou.get_root()
@@ -88,11 +88,9 @@ class Iou(ndb.Model):
         )
         results = []
         for iou in qry.fetch():
-#            if iou.status == OUTSTANDING or iou.user_email != email: # TODO why is this necessary?
-#                continue
             results.append(iou.to_json())
         return results
-
+    
     @staticmethod
     def get_payments_recent():
         root_key = Iou.get_root()
