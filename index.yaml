@@ -20,3 +20,10 @@ indexes:
   properties:
   - name: user_email
   - name: status
+
+- kind: Iou
+  ancestor: yes
+  properties:
+  - name: user_email
+  - name: status
+  - name: status_date

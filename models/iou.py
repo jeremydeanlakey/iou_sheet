@@ -2,11 +2,16 @@ import datetime
 
 from google.appengine.ext import ndb
 
+
 OUTSTANDING = "outstanding"
 PAID = "paid"
 CANCELLED = "canceled"
 
 
+def beginning_of_last_week():
+    today = datetime.datetime.now()
+    days_ago = 7+today.weekday()
+    return (today - datetime.timedelta(days=days_ago))
 
 
 class Iou(ndb.Model):
@@ -80,6 +85,7 @@ class Iou(ndb.Model):
         qry = Iou.query(ancestor=root_key)
         qry = qry.filter(
             Iou.status != OUTSTANDING, 
+            #Iou.status_date > beginning_of_last_week(), 
             Iou.user_email == email
         )
         results = []
@@ -93,6 +99,7 @@ class Iou(ndb.Model):
         qry = Iou.query(ancestor=root_key)
         qry = qry.filter(
             Iou.status == PAID
+            #Iou.status_date > beginning_of_last_week(), 
         )
         results = []
         for iou in qry.fetch():
