@@ -143,7 +143,7 @@ class LoginHandler(BaseHandler):
             pw = self.request.get('pw')
             if user.check_pw(pw):
                 self.login(user.email, user.admin)
-                self.redirect('/?message=login_failed')
+                self.redirect('/?message=login_success')
                 return
         self.render_template('templates/login.html', locals())
     def post(self):

@@ -45,11 +45,13 @@ class User(ndb.Model):
             mail.send_mail(CONTACT_EMAIL, CONTACT_EMAIL, 'IOU failed login', self.email)
             return False
         if self.password == pw:
+            self.failed_logins = 0
+            self.put()
             return True
         self.failed_logins += 1
         self.put()
         # TODO put some notice about disabled login
-        return false
+        return False
     
     @staticmethod
     def reset(email):
