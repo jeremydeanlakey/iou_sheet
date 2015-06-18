@@ -69,6 +69,11 @@ $(document).ready(function() {
 {{user_email}}  (<a href="/logout">logout</a>)
 </div>
 
+{% if admin %}
+<div class="container">
+<a href="/admin">Go to Admin Page</a>
+</div>
+{% endif %}
 
 {% if message %}
 <div class="container">
@@ -113,7 +118,7 @@ Pay/Cancel IOUs
 <th>Amount</th>
 <th>Create Date</th>
 <th>Cancel</th>
-</tr>for
+</tr>
 </thead>
 <tbody>
 {% for iou in ious %}

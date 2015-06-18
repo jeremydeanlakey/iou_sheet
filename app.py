@@ -13,7 +13,18 @@ import datetime # TODO delete?
 
 
 USER_EMAIL = "test@example.com" # TODO delete
-
+MESSAGES = {
+    'login_failed': 'Your email or password is invalid, try going to the reset password page.',
+    'not_logged_in': 'It appears you are not logged in.',
+    'not_admin': 'You are attempting to access an admin page but are not admin',
+    'reset_success': 'Your password has been reset.  Please check your email.',
+    'reset_failed': 'Register/Password reset failed.  Did you enter valid SirsiDynix email?',
+    'no_password': 'Please enter a password',
+    'logged_out': 'You have been logged out',
+    'cancelled': 'Iou cancelled',
+    'new_success': 'Iou created',
+    'paid': 'Iou(s) paid',
+}
 
 class BaseHandler(webapp2.RequestHandler):
     def dispatch(self):
@@ -51,30 +62,32 @@ class BaseHandler(webapp2.RequestHandler):
 class UserHandler(BaseHandler):
     def get(self):
         user_email = self.session.get('email')
+        message = self.request.get('message')
+        message = MESSAGES.get(message)
         if not user_email:
-            self.redirect('/login')
+            self.redirect('/login?message=not_logged_in')
             return
         ious = Iou.get_outstanding(user_email)
         recents = Iou.get_recent(user_email)
-#        message = "Test message"
-        response = template.render('templates/user.html', locals())
-        self.response.out.write(str(response))
+        self.render_template('templates/user.html', locals())
+#        response = template.render('templates/user.html', locals())
+#        self.response.out.write(str(response))
 
 class NewHandler(BaseHandler):
     def post(self):
         user_email = self.session.get('email')
         if not user_email:
-            self.redirect('/login')
+            self.redirect('/login?message=not_logged_in')
             return
         amount = float(self.request.get('amount'))
         Iou.create_new(user_email, amount)
-        self.redirect('/')
+        self.redirect('/?message=new_success')
 
 class PayHandler(BaseHandler):
     def post(self):
         user_email = self.session.get('email')
         if not user_email:
-            self.redirect('/login')
+            self.redirect('/login?message=not_logged_in')
             return
         for iou_id in self.request.arguments():
             iou = Iou.get_by_key(iou_id)
@@ -86,13 +99,13 @@ class PayHandler(BaseHandler):
                 continue
             self.response.out.write(iou_id + ' got right email\n')
             iou.pay()
-        self.redirect('/')
+        self.redirect('/?message=paid')
 
 class CancelHandler(BaseHandler):
     def post(self, iou_id):
         user_email = self.session.get('email')
         if not user_email:
-            self.redirect('/login')
+            self.redirect('/login?message=not_logged_in')
             return
         iou = Iou.get_by_key(iou_id)
         if not iou:
@@ -102,16 +115,18 @@ class CancelHandler(BaseHandler):
             self.error(401)
             return
         iou.cancel()
-        self.redirect('/')
+        self.redirect('/?message=cancelled')
 
 class AdminHandler(BaseHandler):
     def get(self):
         user_email = self.session.get('email')
+        message = self.request.get('message')
+        message = MESSAGES.get(message)
         if not user_email:
-            self.redirect('/login')
+            self.redirect('/login?message=not_logged_in')
             return
         if not self.session.get('admin'):
-            self.redirect('/')
+            self.redirect('/?message=not_admin')
             return
         outstanding = Iou.get_outstanding_all()
         payments = Iou.get_payments_recent()
@@ -120,13 +135,15 @@ class AdminHandler(BaseHandler):
 class LoginHandler(BaseHandler):
     def get(self):
         self.logout()
+        message = self.request.get('message')
+        message = MESSAGES.get(message)
         email = self.request.get('email')
         if email:
             user = User.get_by_email(email)
             pw = self.request.get('pw')
             if user.check_pw(pw):
                 self.login(user.email, user.admin)
-                self.redirect('/')
+                self.redirect('/?message=login_failed')
                 return
         self.render_template('templates/login.html', locals())
     def post(self):
@@ -135,7 +152,7 @@ class LoginHandler(BaseHandler):
         user = User.get_by_email(email)
         pw = self.request.get('pw')
         if not user or not user.check_pw(pw):
-            self.redirect('/login')
+            self.redirect('/login?message=login_failed')
             return
         self.login(user.email, user.admin)
         self.redirect('/')
@@ -143,20 +160,22 @@ class LoginHandler(BaseHandler):
 class LogoutHandler(BaseHandler):
     def get(self):
         self.logout()
-        self.redirect('/login')
+        self.redirect('/login?message=logged_out')
 
 class ResetHandler(BaseHandler):
     def get(self):
         self.logout()
+        message = self.request.get('message')
+        message = MESSAGES.get(message)
         self.render_template('templates/reset.html', locals())
     def post(self):
         self.logout()
         email = self.request.get('email')
         pw = User.reset(email)
         if not pw:
-            self.redirect('/reset')
+            self.redirect('/reset?message=reset_failed')
         else:
-            self.redirect('/login')
+            self.redirect('/login?message=reset_success')
 
 
 iou_id = r'([a-z|A-Z|0-9]+)'

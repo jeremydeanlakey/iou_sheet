@@ -42,6 +42,7 @@ class User(ndb.Model):
     
     def check_pw(self, pw):
         if self.failed_logins > 10:
+            mail.send_mail(CONTACT_EMAIL, CONTACT_EMAIL, 'IOU failed login', self.email)
             return False
         if self.password == pw:
             return True

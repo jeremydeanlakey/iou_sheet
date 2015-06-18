@@ -59,8 +59,6 @@ class Iou(ndb.Model):
         )
         results = []
         for iou in qry.fetch():
-#            if iou.status != OUTSTANDING or iou.user_email != email: # TODO why is this necessary?
-#                continue
             results.append(iou.to_json())
         return results
 
@@ -73,8 +71,6 @@ class Iou(ndb.Model):
         )
         results = []
         for iou in qry.fetch():
-#            if iou.status != OUTSTANDING: # TODO why is this necessary?
-#                continue
             results.append(iou.to_json())
         return results
     
@@ -100,8 +96,6 @@ class Iou(ndb.Model):
         )
         results = []
         for iou in qry.fetch():
-#            if iou.status != PAID: # TODO why is this necessary?
-#                continue
             results.append(iou.to_json())
         return results
     
