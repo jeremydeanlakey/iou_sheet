@@ -84,8 +84,9 @@ class Iou(ndb.Model):
         root_key = Iou.get_root()
         qry = Iou.query(ancestor=root_key)
         qry = qry.filter(
-            Iou.status != OUTSTANDING, 
-            #Iou.status_date > beginning_of_last_week(), 
+            # only one inequality per query, but status_date should also indicate not outstanding
+            #Iou.status != OUTSTANDING, 
+            Iou.status_date > beginning_of_last_week(), 
             Iou.user_email == email
         )
         results = []
@@ -98,8 +99,8 @@ class Iou(ndb.Model):
         root_key = Iou.get_root()
         qry = Iou.query(ancestor=root_key)
         qry = qry.filter(
-            Iou.status == PAID
-            #Iou.status_date > beginning_of_last_week(), 
+            Iou.status == PAID,
+            Iou.status_date > beginning_of_last_week(), 
         )
         results = []
         for iou in qry.fetch():

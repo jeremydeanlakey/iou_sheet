@@ -18,6 +18,12 @@ indexes:
 - kind: Iou
   ancestor: yes
   properties:
+  - name: status
+  - name: status_date
+
+- kind: Iou
+  ancestor: yes
+  properties:
   - name: user_email
   - name: status
 
@@ -26,4 +32,10 @@ indexes:
   properties:
   - name: user_email
   - name: status
+  - name: status_date
+
+- kind: Iou
+  ancestor: yes
+  properties:
+  - name: user_email
   - name: status_date
