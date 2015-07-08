@@ -1,4 +1,4 @@
-import json
+import json, datetime
 
 import webapp2
 import wsgiref.handlers
@@ -7,7 +7,10 @@ from google.appengine.api import memcache
 from webapp2_extras import sessions
 
 from models.iou import Iou, OUTSTANDING, PAID, CANCELLED
+import Cookie
+
 from models.user import User
+from models.longsession import LongSession
 
 import datetime # TODO delete?
 
@@ -25,6 +28,12 @@ MESSAGES = {
     'new_success': 'Iou created',
     'paid': 'Iou(s) paid',
 }
+
+def in_2_years():
+  return datetime.datetime.now() + datetime.timedelta(days=730)
+
+def yesterday():
+  return datetime.datetime.now() + datetime.timedelta(days=-1)
 
 class BaseHandler(webapp2.RequestHandler):
     def dispatch(self):
@@ -58,7 +67,49 @@ class BaseHandler(webapp2.RequestHandler):
     
     def is_logged_in(self):
         return bool(self.session.get('email'))
+    
+    def set_persistent_session(self, email, admin=False):
+        session = LongSession.create_new(email, admin)
+        expires =  in_2_years().strftime('%a, %d %b %Y %H:%M:%S GMT')
+        #self.response.set_cookie('longsession', session)#, expires=expires)
+        #return
+        new_cookie = Cookie.BaseCookie()
+        new_cookie['longsession'] = session.cookie
+        #new_cookie['longsession']['domain'] = 'iousdblue.appspot.com'
+        #expires = 63113832 # 2 years in seconds
+        expires =  in_2_years().strftime('%a, %d %b %Y %H:%M:%S GMT')
+        new_cookie['longsession']['expires'] = expires
+        #self.response.set_cookie('longsession', session.cookie, expires=datetime.datetime.now(), path='/', domain='example.com')
+        #self.response.headers.add_header(
+        # 'Set-Cookie', 
+        # 'credentials=%s; expires=Fri, 31-Dec-2020 23:59:59 GMT' \
+        #  % credentials.encode())
+        for morsel in new_cookie.values():
+          #print morsel.OutputString(None) # TODO delete
+          self.response.headers.add_header('Set-Cookie',morsel.OutputString(None))
+        
+    def delete_persistent_session(self):
+        cookie = self.request.cookies.get('longsession')
+        if not cookie:
+            return
+        session = LongSession.get_by_cookie(cookie)
+        if session:
+            session.key.delete()
+        new_cookie = Cookie.BaseCookie()
+        new_cookie['longsession'] = "deleted"
+        expires =  yesterday().strftime('%a, %d %b %Y %H:%M:%S GMT')
+        new_cookie['longsession']['expires'] = expires
+        for morsel in new_cookie.values():
+            self.response.headers.add_header('Set-Cookie',morsel.OutputString(None))
 
+    def get_persistent_session(self):
+        cookie = self.request.cookies.get('longsession')
+        #print cookie # TODO delete
+        if not cookie:
+          return None
+        session = LongSession.get_by_cookie(cookie)
+        return session
+        
 class UserHandler(BaseHandler):
     def get(self):
         user_email = self.session.get('email')
@@ -134,7 +185,14 @@ class AdminHandler(BaseHandler):
 
 class LoginHandler(BaseHandler):
     def get(self):
-        self.logout()
+        #self.logout()
+        if self.session.get('email'):
+	  self.redirect('/')
+	  return
+	session = self.get_persistent_session()
+	if session:
+	  self.login(session.email, session.admin)
+	  self.redirect('/')
         message = self.request.get('message')
         message = MESSAGES.get(message)
         email = self.request.get('email')
@@ -143,6 +201,7 @@ class LoginHandler(BaseHandler):
             pw = self.request.get('pw')
             if user.check_pw(pw):
                 self.login(user.email, user.admin)
+                self.set_persistent_session(user.email, user.admin)
                 self.redirect('/?message=login_success')
                 return
         self.render_template('templates/login.html', locals())
@@ -155,11 +214,13 @@ class LoginHandler(BaseHandler):
             self.redirect('/login?message=login_failed')
             return
         self.login(user.email, user.admin)
+        self.set_persistent_session(user.email, user.admin)
         self.redirect('/')
 
 class LogoutHandler(BaseHandler):
     def get(self):
         self.logout()
+        self.delete_persistent_session()
         self.redirect('/login?message=logged_out')
 
 class ResetHandler(BaseHandler):
@@ -178,6 +239,11 @@ class ResetHandler(BaseHandler):
             self.redirect('/login?message=reset_success')
 
 
+class TestHandler(BaseHandler):
+    def get(self):
+        cookie = self.request.cookies.get('longsession')
+        self.response.out.write(cookie)
+
 iou_id = r'([a-z|A-Z|0-9]+)'
 
 config = {}
@@ -186,6 +252,7 @@ config['webapp2_extras.sessions'] = {
 }
 
 app = webapp2.WSGIApplication([
+    (r'/test', TestHandler),
     (r'/admin', AdminHandler),
     (r'/login', LoginHandler),
     (r'/logout', LogoutHandler),
