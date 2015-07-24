@@ -40,6 +40,3 @@ indexes:
   - name: user_email
   - name: status_date
 
-- kind: LongSession
-  properties:
-  - name: cookie
