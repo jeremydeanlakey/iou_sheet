@@ -21,7 +21,7 @@ MESSAGES = {
     'not_logged_in': 'It appears you are not logged in.',
     'not_admin': 'You are attempting to access an admin page but are not admin',
     'reset_success': 'Your password has been reset.  Please check your email.',
-    'reset_failed': 'Register/Password reset failed.  Did you enter valid SirsiDynix email?',
+    'reset_failed': 'Register/Password reset failed.  Did you enter valid email?',
     'no_password': 'Please enter a password',
     'logged_out': 'You have been logged out',
     'cancelled': 'Iou cancelled',

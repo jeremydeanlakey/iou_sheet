@@ -4,6 +4,7 @@ from google.appengine.api import mail
 from google.appengine.ext import ndb
     
 CONTACT_EMAIL = 'jeremy.lakey@gmail.com'
+REGEX_EMAIL = r'[^@]+@[^@]+\.[^@]+'
 
 def random_string(n=8):
     char_set = string.ascii_uppercase + string.digits
@@ -30,8 +31,8 @@ def send_password_email(user_email, pw):
     subject = "IOU Sheet Password"
     mail.send_mail(CONTACT_EMAIL, user_email, subject, message)
 
-def is_valid_sirsi_email(email):
-    return bool(re.match(r'[^@]*@sirsidynix[.]com$',email))
+def is_valid_email(email):
+    return bool(re.match(REGEX_EMAIL, email))
 
 
 class User(ndb.Model):
@@ -56,7 +57,7 @@ class User(ndb.Model):
     @staticmethod
     def reset(email):
         email = email.lower()
-        if not is_valid_sirsi_email(email):
+        if not is_valid_email(email):
             return
         user = User.get_by_email(email)
         if not user:
@@ -74,7 +75,7 @@ class User(ndb.Model):
 
     @staticmethod
     def get_root():
-        root_key = ndb.Key('User','root')
+        root_key = ndb.Key('User', 'root')
         if root_key is None:
             new_root = ndb.Model(key='root')
             new_root.put()
