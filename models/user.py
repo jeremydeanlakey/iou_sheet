@@ -11,10 +11,6 @@ def random_string(n=8):
     charlist = [random.choice(char_set) for x in range(n)]
     return ''.join(charlist)
 
-def weekstart(day):
-    dt = datetime.datetime(day.year, day.month, day.day)
-    return (dt - datetime.timedelta(days=dt.weekday())).date()
-
 def send_password_email(user_email, pw):
     message_rows = [
         'Hi,',
