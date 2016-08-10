@@ -104,7 +104,6 @@ class BaseHandler(webapp2.RequestHandler):
 
     def get_persistent_session(self):
         cookie = self.request.cookies.get('longsession')
-        #print cookie # TODO delete
         if not cookie:
           return None
         session = LongSession.get_by_cookie(cookie)
@@ -121,8 +120,6 @@ class UserHandler(BaseHandler):
         ious = Iou.get_outstanding(user_email)
         recents = Iou.get_recent(user_email)
         self.render_template('templates/user.html', locals())
-#        response = template.render('templates/user.html', locals())
-#        self.response.out.write(str(response))
 
 class NewHandler(BaseHandler):
     def post(self):
