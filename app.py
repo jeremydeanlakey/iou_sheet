@@ -184,12 +184,12 @@ class LoginHandler(BaseHandler):
     def get(self):
         #self.logout()
         if self.session.get('email'):
-	  self.redirect('/')
-	  return
-	session = self.get_persistent_session()
-	if session:
-	  self.login(session.email, session.admin)
-	  self.redirect('/')
+            self.redirect('/')
+            return
+        session = self.get_persistent_session()
+        if session:
+            self.login(session.email, session.admin)
+            self.redirect('/')
         message = self.request.get('message')
         message = MESSAGES.get(message)
         email = self.request.get('email')
