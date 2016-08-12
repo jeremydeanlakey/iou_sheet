@@ -70,22 +70,11 @@ class BaseHandler(webapp2.RequestHandler):
     
     def set_persistent_session(self, email, admin=False):
         session = LongSession.create_new(email, admin)
-        expires =  in_2_years().strftime('%a, %d %b %Y %H:%M:%S GMT')
-        #self.response.set_cookie('longsession', session)#, expires=expires)
-        #return
         new_cookie = Cookie.BaseCookie()
         new_cookie['longsession'] = session.cookie
-        #new_cookie['longsession']['domain'] = 'iousdblue.appspot.com'
-        #expires = 63113832 # 2 years in seconds
         expires =  in_2_years().strftime('%a, %d %b %Y %H:%M:%S GMT')
         new_cookie['longsession']['expires'] = expires
-        #self.response.set_cookie('longsession', session.cookie, expires=datetime.datetime.now(), path='/', domain='example.com')
-        #self.response.headers.add_header(
-        # 'Set-Cookie', 
-        # 'credentials=%s; expires=Fri, 31-Dec-2020 23:59:59 GMT' \
-        #  % credentials.encode())
         for morsel in new_cookie.values():
-          #print morsel.OutputString(None) # TODO delete
           self.response.headers.add_header('Set-Cookie',morsel.OutputString(None))
         
     def delete_persistent_session(self):
