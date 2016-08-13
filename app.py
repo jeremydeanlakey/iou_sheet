@@ -12,10 +12,9 @@ import Cookie
 from models.user import User
 from models.longsession import LongSession
 
-import datetime # TODO delete?
+import datetime
 
 
-USER_EMAIL = "test@example.com" # TODO delete
 MESSAGES = {
     'login_failed': 'Your email or password is invalid, try going to the reset password page.',
     'not_logged_in': 'It appears you are not logged in.',
