@@ -1,18 +1,14 @@
-import json, datetime
+import datetime
+import Cookie
 
 import webapp2
 import wsgiref.handlers
 from google.appengine.ext.webapp import template
-from google.appengine.api import memcache
 from webapp2_extras import sessions
 
-from models.iou import Iou, OUTSTANDING, PAID, CANCELLED
-import Cookie
-
+from models.iou import Iou
 from models.user import User
 from models.longsession import LongSession
-
-import datetime
 
 
 MESSAGES = {
