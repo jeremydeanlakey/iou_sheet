@@ -24,11 +24,14 @@ MESSAGES = {
     'paid': 'Iou(s) paid',
 }
 
+
 def in_2_years():
   return datetime.datetime.now() + datetime.timedelta(days=730)
 
+
 def yesterday():
   return datetime.datetime.now() + datetime.timedelta(days=-1)
+
 
 class BaseHandler(webapp2.RequestHandler):
     def dispatch(self):
@@ -92,7 +95,8 @@ class BaseHandler(webapp2.RequestHandler):
           return None
         session = LongSession.get_by_cookie(cookie)
         return session
-        
+
+
 class UserHandler(BaseHandler):
     def get(self):
         user_email = self.session.get('email')
@@ -133,6 +137,7 @@ class PayHandler(BaseHandler):
             iou.pay()
         self.redirect('/?message=paid')
 
+
 class CancelHandler(BaseHandler):
     def post(self, iou_id):
         user_email = self.session.get('email')
@@ -164,6 +169,7 @@ class AdminHandler(BaseHandler):
         payments = Iou.get_payments_recent()
         self.render_template('templates/admin.html', locals())
 
+
 class LoginHandler(BaseHandler):
     def get(self):
         #self.logout()
@@ -186,6 +192,7 @@ class LoginHandler(BaseHandler):
                 self.redirect('/?message=login_success')
                 return
         self.render_template('templates/login.html', locals())
+
     def post(self):
         self.logout()
         email = self.request.get('email')
@@ -198,11 +205,13 @@ class LoginHandler(BaseHandler):
         self.set_persistent_session(user.email, user.admin)
         self.redirect('/')
 
+
 class LogoutHandler(BaseHandler):
     def get(self):
         self.logout()
         self.delete_persistent_session()
         self.redirect('/login?message=logged_out')
+
 
 class ResetHandler(BaseHandler):
     def get(self):
@@ -210,6 +219,7 @@ class ResetHandler(BaseHandler):
         message = self.request.get('message')
         message = MESSAGES.get(message)
         self.render_template('templates/reset.html', locals())
+
     def post(self):
         self.logout()
         email = self.request.get('email')
@@ -225,12 +235,14 @@ class TestHandler(BaseHandler):
         cookie = self.request.cookies.get('longsession')
         self.response.out.write(cookie)
 
-iou_id = r'([a-z|A-Z|0-9]+)'
 
-config = {}
-config['webapp2_extras.sessions'] = {
-    'secret_key': 'HailTorchwood',
+config= {
+    'webapp2_extras.sessions': {
+        'secret_key': 'HailTorchwood',
+    }
 }
+
+iou_id = r'([a-z|A-Z|0-9]+)'
 
 app = webapp2.WSGIApplication([
     (r'/test', TestHandler),
@@ -246,8 +258,10 @@ app = webapp2.WSGIApplication([
     config=config,
     debug=False)
 
+
 def main():
     wsgiref.handlers.CGIHandler().run(app)
+
 
 if __name__ == "__main__":
     main()
