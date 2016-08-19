@@ -11,7 +11,7 @@ CANCELLED = "canceled"
 def beginning_of_last_week():
     today = datetime.datetime.now()
     days_ago = 7+today.weekday()
-    return (today - datetime.timedelta(days=days_ago))
+    return today - datetime.timedelta(days=days_ago)
 
 
 class Iou(ndb.Model):
