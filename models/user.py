@@ -2,14 +2,17 @@ import string, re, random
 
 from google.appengine.api import mail
 from google.appengine.ext import ndb
-    
+
+
 CONTACT_EMAIL = 'jeremy.lakey@gmail.com'
 REGEX_EMAIL = r'[^@]+@[^@]+\.[^@]+'
+
 
 def random_string(n=8):
     char_set = string.ascii_uppercase + string.digits
     charlist = [random.choice(char_set) for x in range(n)]
     return ''.join(charlist)
+
 
 def send_password_email(user_email, pw):
     message_rows = [
@@ -26,6 +29,7 @@ def send_password_email(user_email, pw):
     message = '\n'.join(message_rows)
     subject = "IOU Sheet Password"
     mail.send_mail(CONTACT_EMAIL, user_email, subject, message)
+
 
 def is_valid_email(email):
     return bool(re.match(REGEX_EMAIL, email))
