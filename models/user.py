@@ -10,7 +10,7 @@ REGEX_EMAIL = r'[^@]+@[^@]+\.[^@]+'
 
 def random_string(n=8):
     char_set = string.ascii_uppercase + string.digits
-    charlist = [random.choice(char_set) for x in range(n)]
+    charlist = [random.choice(char_set) for _ in range(n)]
     return ''.join(charlist)
 
 
