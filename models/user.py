@@ -42,18 +42,31 @@ class User(ndb.Model):
     failed_logins = ndb.IntegerProperty(default=0) 
     
     def check_pw(self, pw):
-        if self.failed_logins > 10:
-            mail.send_mail(CONTACT_EMAIL, CONTACT_EMAIL, 'IOU failed login', self.email)
-            return False
-        if self.password == pw:
+        if self.failed_logins < 10 and self.password == pw:
             self.failed_logins = 0
             self.put()
             return True
         self.failed_logins += 1
         self.put()
-        # TODO put some notice about disabled login
+        if self.failed_logins == 10:
+            self.send_account_locked_notice()
         return False
-    
+
+    def send_account_locked_notice(self):
+        message_rows = [
+            'Hi,',
+            '',
+            'Your account for {} has been locked for too many failed login attempts.'.format('iousdblue.appspot.com'),
+            '',
+            'To fix this, contact the admin to fix this at {}'.format(CONTACT_EMAIL),
+        ]
+        message = '\n'.join(message_rows)
+        subject = "Account locked"
+        mail.send_mail(CONTACT_EMAIL, self.email, subject, message)
+        mail.send_mail(CONTACT_EMAIL, CONTACT_EMAIL, 'IOU account locked for failed logins', self.email)
+
+
+
     @staticmethod
     def reset(email):
         email = email.lower()
