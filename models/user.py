@@ -65,8 +65,6 @@ class User(ndb.Model):
         mail.send_mail(CONTACT_EMAIL, self.email, subject, message)
         mail.send_mail(CONTACT_EMAIL, CONTACT_EMAIL, 'IOU account locked for failed logins', self.email)
 
-
-
     @staticmethod
     def reset(email):
         email = email.lower()
