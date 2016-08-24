@@ -46,11 +46,7 @@ class Iou(ndb.Model):
     @staticmethod
     def create_new(email, amount):
         root_key = Iou.get_root()
-        new_iou = Iou(
-            parent = root_key,
-            user_email = email,
-            amount = amount
-        )
+        new_iou = Iou(parent=root_key, user_email=email, amount=amount)
         new_iou.put()
         return new_iou
     
