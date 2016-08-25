@@ -70,10 +70,10 @@ class BaseHandler(webapp2.RequestHandler):
         session = LongSession.create_new(email, admin)
         new_cookie = Cookie.BaseCookie()
         new_cookie['longsession'] = session.cookie
-        expires =  in_2_years().strftime('%a, %d %b %Y %H:%M:%S GMT')
+        expires = in_2_years().strftime('%a, %d %b %Y %H:%M:%S GMT')
         new_cookie['longsession']['expires'] = expires
         for morsel in new_cookie.values():
-          self.response.headers.add_header('Set-Cookie',morsel.OutputString(None))
+            self.response.headers.add_header('Set-Cookie', morsel.OutputString(None))
         
     def delete_persistent_session(self):
         cookie = self.request.cookies.get('longsession')
@@ -84,7 +84,7 @@ class BaseHandler(webapp2.RequestHandler):
             session.key.delete()
         new_cookie = Cookie.BaseCookie()
         new_cookie['longsession'] = "deleted"
-        expires =  yesterday().strftime('%a, %d %b %Y %H:%M:%S GMT')
+        expires = yesterday().strftime('%a, %d %b %Y %H:%M:%S GMT')
         new_cookie['longsession']['expires'] = expires
         for morsel in new_cookie.values():
             self.response.headers.add_header('Set-Cookie',morsel.OutputString(None))
@@ -236,7 +236,7 @@ class TestHandler(BaseHandler):
         self.response.out.write(cookie)
 
 
-config= {
+config = {
     'webapp2_extras.sessions': {
         'secret_key': 'HailTorchwood',
     }
