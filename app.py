@@ -92,7 +92,7 @@ class BaseHandler(webapp2.RequestHandler):
     def get_persistent_session(self):
         cookie = self.request.cookies.get('longsession')
         if not cookie:
-          return None
+            return None
         session = LongSession.get_by_cookie(cookie)
         return session
 
@@ -109,6 +109,7 @@ class UserHandler(BaseHandler):
         recents = Iou.get_recent(user_email)
         self.render_template('templates/user.html', locals())
 
+
 class NewHandler(BaseHandler):
     def post(self):
         user_email = self.session.get('email')
@@ -118,6 +119,7 @@ class NewHandler(BaseHandler):
         amount = float(self.request.get('amount'))
         Iou.create_new(user_email, amount)
         self.redirect('/?message=new_success')
+
 
 class PayHandler(BaseHandler):
     def post(self):
@@ -153,6 +155,7 @@ class CancelHandler(BaseHandler):
             return
         iou.cancel()
         self.redirect('/?message=cancelled')
+
 
 class AdminHandler(BaseHandler):
     def get(self):
