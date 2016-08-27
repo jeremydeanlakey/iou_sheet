@@ -175,7 +175,6 @@ class AdminHandler(BaseHandler):
 
 class LoginHandler(BaseHandler):
     def get(self):
-        #self.logout()
         if self.session.get('email'):
             self.redirect('/')
             return
